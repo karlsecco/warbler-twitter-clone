@@ -1,8 +1,23 @@
 # Warbler
 
 A Twitter clone with a Rithm spin.
+This app was independenly upgraded as a student at Rithm School. Amendments include:
 
-[Live site](http://warbler-app.herokuapp.com/)
+3/25/18
+
+* Unique message like/unlike feature and liked messages display page for each user
+* Unique username and ability to display/edit personal information and profile images
+* Forms and form submit button features--follow/unfollow, like/unlike, delete message, delete user, search--secured via CSRF token validation
+* Search method switched to POST to hide CSRF token from query string
+* Follow button removed from any profile display page, disallowing signed in user to follow his/her own account
+* Conditional jinja logic added to display updated user info/images else default options without displaying static folder routes to user in edit form
+* Variable/route naming syntax for follwer/follwee corrected site-wide from base code
+* Home page now displays top 100 most recent messages from followed accounts and signed in user, else top 100 most recent posts if user is following no one
+* All users' header images displayed upon search instead of initial default image setting
+* 'data.sql' seed file adjusted to remove broken images
+* 404 error page added including site-wide nav header to help redirect users appropriately
+
+[Live site](http://at-warbler.herokuapp.com/)
 
 ### Installation
 
@@ -193,6 +208,6 @@ Here are a few different resources for testing your Flask applications.
 
 &nbsp;
 
-For one bug, the first step in producing it is searching for yourself while you're logged in.
+For one bug, the first step in producing it is searching for yourself while you're logged in. _ADDRESSED_ Users are now unable to follow themseleves if their profile is displayed in search results
 
 For another bug, what happens when you go to `/users/login` when you're already logged in?

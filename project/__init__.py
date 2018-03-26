@@ -20,8 +20,8 @@ else:
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = False
 app.config['TEMPLATES_AUTO_RELOAD'] = True
-# app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
+# app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 # toolbar = DebugToolbarExtension(app)
 
 modus = Modus(app)

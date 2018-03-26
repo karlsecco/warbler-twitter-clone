@@ -2,7 +2,7 @@
 {% block content %}
 <div class="row justify-content-md-center">
   <div class="col-md-4">
-    <h2 class="join-message">Join Warbler today.</h2>
+    <h2 class="join-message">Join Warbler today!</h2>
     <form action="{{ url_for('users.signup') }}" method="POST" id="user_form">
       {{ form.csrf_token }} {% if form.email.errors %} {% for error in form.email.errors %}
       <span class="text-danger">
