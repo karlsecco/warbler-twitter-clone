@@ -6,9 +6,9 @@
       <div class="card user-card">
         <div class="card-inner">
             {% if follower.header_image_url %}
-            <img src="{{ follower.header_image_url }}" alt="" class="card-hero">
+            <img src="{{ follower.header_image_url }}" alt="Header image for {{ follower.username }}" class="card-hero">
             {% else %}
-            <img src="{{ url_for('static', filename='images/default-header.jpeg') }}" alt="" class="card-hero">
+            <img src="{{ url_for('static', filename='images/default-header.jpeg') }}" alt="Header image for {{ follower.username }}" class="card-hero">
             <!-- https://unsplash.com/photos/Wt8BhFiGkw0 -->
             {% endif %}
             <div class="card-contents">
@@ -17,10 +17,10 @@
                 <img src="{{ follower.image_url }}" alt="Image for {{ follower.username }}" class="card-image">
                 {% else %}
                 <img src="/static/images/default-pic.png" alt="Image for {{ follower.username }}" class="card-image">
+                {% endif %}
               <p>@{{ follower.username }}</p>
             </a>
-            {% if current_user.show_follow(follower) %}
-              {% if current_user.is_following(follower) %}
+              {% if user.is_following(follower) %}
               <form method="POST" action="{{url_for('users.followee', followee_id=follower.id)}}?_method=DELETE">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <input type="submit" value="Unfollow" class="btn btn-primary btn-sm">
@@ -31,7 +31,6 @@
                 <input type="submit" value="Follow" class="btn btn-outline-primary btn-sm">
               </form>
               {% endif %}
-            {% endif %}
           </div>
         </div>
       </div>
