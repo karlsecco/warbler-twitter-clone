@@ -51,6 +51,7 @@ body {
 }
 
 .nav > li > a > img {
+  object-fit: cover;
   border-radius: 34px;
   height: 34px;
   width: 34px;
@@ -174,6 +175,7 @@ nav + .container {
 }
 
 .timeline-image {
+  object-fit: cover;
   border-radius: 48px;
   height: 48px;
   width: 48px;
