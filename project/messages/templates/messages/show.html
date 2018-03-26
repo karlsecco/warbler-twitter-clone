@@ -1,5 +1,4 @@
-{% extends 'base.html' %} 
-{% block content %}
+{% extends 'base.html' %} {% block content %}
 <div class="bg"></div>
 <div class="row justify-content-center">
   <div class="col-md-6">
@@ -11,24 +10,35 @@
         <div class="message-area">
           <div class="message-heading">
             <a href="{{ url_for('users.show', id=message.user.id) }}">@{{ message.user.username }}</a>
-            {% if current_user.is_authenticated %}
-              {% if current_user.id == message.user.id %}
-                <form method="POST" action="{{url_for('messages.show', message_id=message.id, id=message.user.id)}}?_method=DELETE">
-                  <input type="submit" value="Delete" class="btn btn-outline-danger">
-                </form>
-              {% elif current_user.is_following(message.user) %}
-                <form method="POST" action="{{url_for('users.follower', follower_id=message.user.id)}}?_method=DELETE">
-                  <input type="submit" value="Unfollow" class="btn btn-primary">
-                </form>
-              {% else %}
-                <form method="POST" action="{{url_for('users.follower', follower_id=message.user.id)}}">
-                  <input type="submit" value="Follow" class="btn btn-outline-primary btn-sm">
-                </form>
-              {% endif %}
-            {% endif %}
+            {% if current_user.is_authenticated %} {% if current_user.id == message.user.id %}
+            <form method="POST" action="{{url_for('messages.show', message_id=message.id, id=message.user.id)}}?_method=DELETE">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <input type="submit" value="Delete" class="btn btn-outline-danger">
+            </form>
+            {% elif current_user.is_following(message.user) %}
+            <form method="POST" action="{{url_for('users.followee', followee_id=message.user.id)}}?_method=DELETE">
+              <input type="submit" value="Unfollow" class="btn btn-primary">
+            </form>
+            {% else %}
+            <form method="POST" action="{{url_for('users.followee', followee_id=message.user.id)}}">
+              <input type="submit" value="Follow" class="btn btn-outline-primary btn-sm">
+            </form>
+            {% endif %} {% endif %}
           </div>
           <p class="single-message">{{ message.text }}</p>
+          {% if current_user.does_like(message) %}
+          <form method="POST" action="{{url_for('messages.like', id=message.user_id, message_id=message.id)}}?_method=DELETE" class="ml-auto">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit" class="btn btn-link btn-lg"><i class="fas fa-heart"></i></button>
+          </form>
+          {% else %}
+          <form method="POST" action="{{url_for('messages.like', id=message.user_id, message_id=message.id)}}" class="ml-auto">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit" class="btn btn-link btn-lg"><i class="far fa-heart"></i></button>
+          </form>
+          {% endif %}
           <span class="text-muted">{{ message.timestamp.strftime('%d %B %Y') }}</span>
+          
         </div>
       </li>
     </ul>

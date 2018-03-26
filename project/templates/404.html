@@ -1,0 +1,12 @@
+{% extends 'base.html' %} {% block content %}
+<div id="error" class="col">
+  <h1>404</h1>
+  <h3>PAGE NOT FOUND |
+    <a href="{{ url_for('root') }}">
+      Fly away while you still can!
+    </a>
+  </h3>
+  <br>
+  <img src="/static/images/404.gif" alt="This is not your nest, wee warbler">
+</div>
+{% endblock %}

@@ -1,9 +1,11 @@
 from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
 from flask_modus import Modus
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
-from flask_debugtoolbar import DebugToolbarExtension
+from flask_wtf.csrf import CSRFProtect
+# from flask_debugtoolbar import DebugToolbarExtension
 import os
 
 app = Flask(__name__)
@@ -18,18 +20,22 @@ else:
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = False
 app.config['TEMPLATES_AUTO_RELOAD'] = True
-app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY') or "it's a secret"
-toolbar = DebugToolbarExtension(app)
+# app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
+# toolbar = DebugToolbarExtension(app)
 
 modus = Modus(app)
 bcrypt = Bcrypt(app)
 login_manager = LoginManager(app)
 db = SQLAlchemy(app)
+migrate = Migrate(app, db)
+csrf = CSRFProtect(app)
 
 from project.users.views import users_blueprint
 from project.messages.views import messages_blueprint
 from project.users.models import User
 from project.messages.models import Message
+from flask_login import current_user
 
 app.register_blueprint(users_blueprint, url_prefix='/users')
 app.register_blueprint(
@@ -43,8 +49,21 @@ def load_user(id):
 
 @app.route('/')
 def root():
-    messages = Message.query.order_by("timestamp asc").limit(100).all()
-    return render_template('home.html', messages=messages)
+    if current_user.is_authenticated:
+        followees = current_user.following.all()
+        if len(followees):
+            ids = [f.id for f in followees] + [current_user.id]
+            messages = Message.query.filter(
+                Message.user_id.in_(ids)).order_by("timestamp desc").limit(100)
+        else:
+            messages = Message.query.order_by("timestamp desc").limit(100)
+        return render_template('home.html', messages=messages)
+    return render_template('home.html')
+
+
+@app.errorhandler(404)
+def page_not_found(error):
+    return render_template('404.html'), 404
 
 
 @app.after_request

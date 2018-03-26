@@ -1,25 +1,36 @@
-{% extends 'user_page.html' %}
-{% block user_details %}
+{% extends 'user_page.html' %} {% block user_details %}
 <div class="col-sm-9">
   <div class="row">
-    {% for follower in user.followers %}
+    {% for follower in user.followers|sort(attribute='username') %}
     <div class="col-lg-4 col-md-6 col-12">
       <div class="card user-card">
         <div class="card-inner">
-          <img src="{{ url_for('static', filename='images/warbler-hero.jpg') }}" alt="" class="card-hero">
-          <div class="card-contents">
-            <a href="{{ url_for('users.show', id=follower.id) }}" class="card-link">
-              <img src="{{ follower.image_url }}" alt="Image for {{ follower.username }}" class="card-image">
+            {% if follower.header_image_url %}
+            <img src="{{ follower.header_image_url }}" alt="" class="card-hero">
+            {% else %}
+            <img src="{{ url_for('static', filename='images/default-header.jpeg') }}" alt="" class="card-hero">
+            <!-- https://unsplash.com/photos/Wt8BhFiGkw0 -->
+            {% endif %}
+            <div class="card-contents">
+              <a href="{{ url_for('users.show', id=follower.id) }}" class="card-link">
+                {% if follower.image_url %}
+                <img src="{{ follower.image_url }}" alt="Image for {{ follower.username }}" class="card-image">
+                {% else %}
+                <img src="/static/images/default-pic.png" alt="Image for {{ follower.username }}" class="card-image">
               <p>@{{ follower.username }}</p>
             </a>
-            {% if current_user.is_following(follower) %}
-            <form method="POST" action="{{url_for('users.follower', follower_id=follower.id)}}?_method=DELETE">
-              <input type="submit" value="Unfollow" class="btn btn-primary btn-sm">
-            </form>
-            {% else %}
-            <form method="POST" action="{{url_for('users.follower', follower_id=follower.id)}}">
-              <input type="submit" value="Follow" class="btn btn-outline-primary btn-sm">
-            </form>
+            {% if current_user.show_follow(follower) %}
+              {% if current_user.is_following(follower) %}
+              <form method="POST" action="{{url_for('users.followee', followee_id=follower.id)}}?_method=DELETE">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="submit" value="Unfollow" class="btn btn-primary btn-sm">
+              </form>
+              {% else %}
+              <form method="POST" action="{{url_for('users.followee', followee_id=follower.id)}}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="submit" value="Follow" class="btn btn-outline-primary btn-sm">
+              </form>
+              {% endif %}
             {% endif %}
           </div>
         </div>

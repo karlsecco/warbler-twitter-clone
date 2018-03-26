@@ -1,7 +1,11 @@
-{% extends 'base.html' %}
-{% block content %}
-<div id="warbler-hero" class="full-width"></div>
-<img src="{{ user.image_url }}" alt="Image for {{ user.username }}" id="profile-avatar">
+{% extends 'base.html' %} {% block content %} {% if user.header_image_url == None %}
+<img id="warbler-hero" class="full-width" src="{{ url_for('static', filename='images/default-header.jpeg') }}" alt="Header image for {{ user.username }}">
+<!-- https://unsplash.com/photos/Wt8BhFiGkw0 -->
+{% else %}
+<img id="warbler-hero" class="full-width" src="{{ user.header_image_url }}" alt="Header image for {{ user.username }}"> {% endif %} {% if user.image_url == None %}
+<img id="profile-avatar" src="/static/images/default-pic.png" alt="Image for {{ user.username }}">
+{% else %}
+<img id="profile-avatar" src="{{ user.image_url }}" alt="Image for {{ user.username }}"> {% endif %}
 <div class="row full-width">
   <div class="container">
     <div class="row justify-content-end">
@@ -27,20 +31,25 @@
           </li>
           <li class="stat">
             <p class="small">Likes</p>
-            <h4>TBD</h4>
+            <h4>
+              <a href="{{ url_for('messages.index', id=user.id) }}">{{ user.liked_messages.count() }}</a>
+            </h4>
           </li>
           <div class="ml-auto">
             {% if current_user.id == user.id %}
             <a href="{{ url_for('users.edit', id=user.id) }}" class="btn btn-outline-secondary">Edit Profile</a>
             <form method="POST" action="{{url_for('users.show', id=user.id)}}?_method=DELETE" class="form-inline">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
               <input type="submit" value="Delete Profile" class="btn btn-outline-danger ml-2">
             </form>
             {% elif current_user.is_authenticated %} {% if current_user.is_following(user) %}
-            <form method="POST" action="{{url_for('users.follower', follower_id=user.id)}}?_method=DELETE">
+            <form method="POST" action="{{url_for('users.followee', followee_id=user.id)}}?_method=DELETE">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
               <input type="submit" value="Unfollow" class="btn btn-primary">
             </form>
             {% else %}
-            <form method="POST" action="{{url_for('users.follower', follower_id=user.id)}}">
+            <form method="POST" action="{{url_for('users.followee', followee_id=user.id)}}">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
               <input type="submit" value="Follow" class="btn btn-outline-primary">
             </form>
             {% endif %} {% endif %}
@@ -52,10 +61,17 @@
 </div>
 <div class="row">
   <div class="col-sm-3">
-    <h4 id="sidebar-username">@{{ user.username }}</h4>
+    <h5 id="sidebar-username">
+      {% if user.first_name != None %} {{ user.first_name }} {% endif %} {% if user.last_name != None %} {{ user.last_name }} {%
+      endif %}
+    </h5>
+    <h4>@{{ user.username }}</h4>
+    <p>{% if user.bio != None %} {{ user.bio }}
+      <br> {% endif %} {% if user.location != None %}
+      <i class="fas fa-map-marker-alt"></i>
+      {{ user.location }} {% endif %}
+    </p>
   </div>
-  {% block user_details %}
-  {% endblock %}
-</div>
+  {% block user_details %} {% endblock %}
 </div>
 {% endblock %}
